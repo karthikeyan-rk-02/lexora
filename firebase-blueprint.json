@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full name of the user",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile photo URL"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when user document was created"
+        }
+      },
+      "required": ["uid", "fullName", "email", "createdAt"]
+    },
+    "VocabularyItem": {
+      "title": "VocabularyItem",
+      "description": "Personal English vocabulary entry with optional Tamil meaning",
+      "type": "object",
+      "properties": {
+        "word": {
+          "type": "string",
+          "description": "English vocabulary word",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "englishMeaning": {
+          "type": "string",
+          "description": "Definition and meaning in English",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "tamilMeaning": {
+          "type": "string",
+          "description": "Tamil translation/meaning",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Document creation server timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Document last update server timestamp"
+        }
+      },
+      "required": ["word", "englishMeaning", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User account document"
+    },
+    "/users/{uid}/vocabulary/{wordId}": {
+      "schema": "VocabularyItem",
+      "description": "Vocabulary entries owned by the user"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Lexora - Premium Vocabulary Management",
+  "description": "Your words. Your knowledge. Your vocabulary. Build, expand, and master English vocabulary with Tamil meanings and cloud persistence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

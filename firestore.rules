@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUser(data, userId) {
+      return data.uid == userId &&
+        data.uid == request.auth.uid &&
+        data.fullName is string &&
+        data.fullName.size() > 0 &&
+        data.fullName.size() <= 100 &&
+        data.email is string &&
+        data.email.size() <= 150 &&
+        (!('photoURL' in data) || data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 2000));
+    }
+
+    function isValidVocabularyItem(data) {
+      return data.keys().hasAll(['word', 'englishMeaning', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['word', 'englishMeaning', 'tamilMeaning', 'createdAt', 'updatedAt']) &&
+        data.word is string &&
+        data.word.size() > 0 &&
+        data.word.size() <= 100 &&
+        data.englishMeaning is string &&
+        data.englishMeaning.size() > 0 &&
+        data.englishMeaning.size() <= 2000 &&
+        (!('tamilMeaning' in data) || data.tamilMeaning == null || (data.tamilMeaning is string && data.tamilMeaning.size() <= 2000));
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) &&
+        isValidUser(incoming(), userId) &&
+        incoming().createdAt == request.time;
+      allow update: if isOwner(userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        (!('email' in incoming()) || incoming().email == existing().email) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'photoURL']) &&
+        (!('fullName' in incoming()) || (incoming().fullName is string && incoming().fullName.size() > 0 && incoming().fullName.size() <= 100)) &&
+        (!('photoURL' in incoming()) || incoming().photoURL == null || (incoming().photoURL is string && incoming().photoURL.size() <= 2000));
+      allow delete: if false;
+
+      match /vocabulary/{wordId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+          isValidVocabularyItem(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time;
+        allow update: if isOwner(userId) &&
+          isValidVocabularyItem(incoming()) &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['word', 'englishMeaning', 'tamilMeaning', 'updatedAt']);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}
