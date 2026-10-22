@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, Menu, Sparkles, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useVocabulary } from '../../context/VocabularyContext.tsx';
+import { PWAInstallButton } from '../common/PWAInstallButton.tsx';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -67,6 +68,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
 
         {/* Right: Quick Search & Profile Avatar */}
         <div className="flex items-center gap-3">
+          {/* PWA Install Button (auto-hides when running standalone) */}
+          <PWAInstallButton variant="header" />
+
           {/* Search Bar */}
           <div className="relative w-44 sm:w-64 md:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />

@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
+import { PWAInstallButton } from '../common/PWAInstallButton.tsx';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -129,6 +130,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Section: Profile + Collapse Button */}
         <div className="p-3 border-t border-slate-100 space-y-2">
+          {/* PWA Install Action */}
+          {!isCollapsed && <PWAInstallButton variant="sidebar" />}
+
           {/* User profile card */}
           <div
             className={`flex items-center gap-3 p-2 rounded-xl bg-slate-50 border border-slate-100 ${
